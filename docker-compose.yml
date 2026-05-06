@@ -1,34 +1,28 @@
-version: '3.8'
-
 services:
-  # La Base de Datos (PostgreSQL)
-  db:
-    image: postgres:15
-    container_name: db-restaurante
-    restart: always
-    environment:
-      POSTGRES_USER: user_restaurante
-      POSTGRES_PASSWORD: password_123
-      POSTGRES_DB: restaurante_db
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  # Tu aplicación NestJS (El Backend)
   backend:
-    build: .
-    container_name: nestjs-restaurante
-    restart: always
+    build: ./backend
     ports:
       - "3000:3000"
     environment:
-      # Esta línea es la que hace la magia de conectar ambos servicios
-      DATABASE_URL: "postgresql://user_restaurante:password_123@db:5432/restaurante_db?schema=public"
+      - DATABASE_URL=postgresql://usuario:password@db:5432/nombre_db
     depends_on:
       - db
 
-volumes:
-  postgres_data:
-  
-  
+  frontend:
+    build: ./frontend
+    ports:
+      - "3001:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3000
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: usuario
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: nombre_db
+    ports:
+      - "5433:5432"
+      
