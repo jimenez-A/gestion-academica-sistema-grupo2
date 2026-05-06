@@ -1,0 +1,35 @@
+// ============================================================
+// Prisma Schema — Sistema de Gestión de Restaurante
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model Restaurante {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  direccion   String
+  telefono    String
+  descripcion String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Esta es la conexión con los platos
+  platos      Plato[]
+
+  @@map("restaurantes")
+}
+
+model Plato {
+  id            Int         @id @default(autoincrement())
+  nombre        String
+  precio        Float
+  descripcion   String?
+  restauranteId Int
+  restaurante   Restaurante @relation(fields: [restauranteId], references: [id])
+}
